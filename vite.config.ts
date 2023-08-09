@@ -10,7 +10,7 @@ import tsConfigPaths from 'vite-tsconfig-paths'
 // https://vitejs.dev/config/
 export default defineConfig((configEnv) => ({
   plugins: [
-    react(),
+    // react(),
     tsConfigPaths(),
     // linterPlugin({
     //   include: ['./src}/**/*.{ts,tsx}'],
@@ -30,8 +30,22 @@ export default defineConfig((configEnv) => ({
     },
     rollupOptions: {
       external: [
+        'react', 'react-dom',
         // ...Object.keys(packageJson.peerDependencies)
       ],
+      output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'reactdom'
+        },
+      },
     },
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: '@import "./src/shared/styles/variables.scss";'
+      }
+    }
+  }
 }))

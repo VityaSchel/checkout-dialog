@@ -1,4 +1,26 @@
 .btn {
-  background-color: #000;
-  color: #fff;
+  display: flex;
+  width: 358px;
+  padding: 17px 119px 17px 118px;
+  justify-content: center;
+  align-items: center;
+  border-radius: 16px;
+  background: #589195;
+  box-shadow: 6px 6px 26px 7px rgba(203, 203, 203, 0.25);
+  border: 0;
+  color: #FFF;
+  text-align: center;
+  font-family: $fonts;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: 0.16px;
+  cursor: pointer;
+  transition: background-color 120ms ease-in-out;
+
+  &[disabled] {
+    background-color: #d3d3d3;
+    cursor: auto;
+  }
 }

@@ -1,3 +1,2 @@
-// export type { IHelloWorld } from './Helloworld'
-export { Helloworld } from './component/index'
-import './shared/styles.css'
+export * from './component/index'
+import './shared/styles/global.css'

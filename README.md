@@ -8,12 +8,22 @@ Types definitions запакованы, стили скомпилированы 
 
 ```tsx
 import { CheckoutModal } from 'checkout-modal'
-import 'checkout-modal/style.css'
+import type { CheckoutModalRef } from 'checkout-modal'
+import 'checkout-modal/index.css'
 
 function Main() {
+  const checkoutRef = React.useRef<CheckoutModalRef>()
+
+  React.useEffect(() => {
+    checkoutRef.current.open()
+  }, [checkoutRef])
+
   return (
-    <CheckoutModal />
+    <CheckoutModal
+      ref={checkoutRef}
+    />
   )
 }
-
 ```
+
+Обязательна настройка сервер-сайд рендеринга [https://mui.com/material-ui/guides/server-rendering/](https://mui.com/material-ui/guides/server-rendering/)
