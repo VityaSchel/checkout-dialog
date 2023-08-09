@@ -12,10 +12,11 @@
   ],
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/checkout.es.js",
       "require": "./dist/checkout.umd.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./style.css": "./dist/style.css"
   },
   "main": "./dist/checkout.umd.js",
   "module": "./dist/checkout.es.js",

@@ -18,8 +18,9 @@
      "esModuleInterop": true ,
      "declarationMap": true,
     "baseUrl": ".",
-     "paths": {
-      "checkout": [ "src/component/index.tsx" ]
+    "paths": {
+      "checkout": [ "src/component/index.tsx" ],
+      "@/*": ["./src/*"]
     },
     "typeRoots": [
       "node_modules/@types",
