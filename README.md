@@ -15,8 +15,20 @@ function Main() {
   const checkoutRef = React.useRef<CheckoutModalRef>()
 
   React.useEffect(() => {
-    checkoutRef.current.open()
-  }, [checkoutRef])
+    checkoutRef.current?.open({
+      paymentInfo: {
+        title: 'Оплата подписки "название магазина"',
+        priceString: '999 ₽',
+        priceInRub: 999
+      },
+      // paymentProcessor: { name: 'cloudpayments', publicId: 'test_api_000000000000000002' },
+      paymentProcessor: { name: 'payselection', publickey: '0405397f7577bd835210a57708aafe876786dc8e2d12e6880917d61a4ad1d03a75068ea6bc26554c7a1bf5b50ed40105837eee001178579279eca57f89bdff5fc2' },
+      checkboxes: [
+        { defaultActive: true, htmlLabel: 'Foo bar' },
+        { defaultActive: true, htmlLabel: 'Hello world' },
+      ]
+    }, alert)
+  }, [])
 
   return (
     <CheckoutModal
