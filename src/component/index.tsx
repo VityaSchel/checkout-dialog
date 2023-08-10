@@ -3,12 +3,6 @@ import styles from './styles.module.scss'
 import { Button } from '@/shared/button'
 import Dialog from '@mui/material/Dialog'
 import { PayForm } from '@/features/pay-form'
-import { default as initEciesWASM } from 'ecies-wasm'
-import * as ecies from 'ecies-wasm'
-
-initEciesWASM()
-
-import eccrypto from 'eccrypto'
 
 export type PayFormValues = {
   cardNumber: string
@@ -78,41 +72,21 @@ const CheckoutModal = React.forwardRef((props, ref) => {
 
   const generatePaySelectionCryptogram = async ({ cardNumber, cardExp, cardCVC }: PayFormValues, publickey: string): Promise<boolean> => {
     try {
-      // var pubkey = Buffer.from(publickey, 'hex')
-      const pk = hexToUint8Array(publickey)
-      const formData = JSON.stringify({
+      const formData = {
         TransactionDetails: {
           Amount: paymentInfo?.priceInRub,
           Currency: 'RUB'
         },
-        PaymentMethod: 'Card',
         PaymentDetails: {
           CardholderName: 'TEST CARD',
           CardNumber: cardNumber,
-          CVC: cardCVC,
+          CVC: Number(cardCVC),
           ExpMonth: cardExp.split('/')[0],
           ExpYear: cardExp.split('/')[1]
         },
-        MessageExpiration: Date.now() + 86400000
-      })
-      const encoder = new TextEncoder()
-      const data = encoder.encode(formData)
-      const encrypted = await ecies.encrypt(pk, data)
-      console.log(encrypted)
-      // console.log(encrypted.toString('hex'))
-      // const sendData = {
-      //   signedMessage: JSON.stringify(
-      //     {
-      //       encryptedMessage: encrypted.ciphertext.toString('base64'),
-      //       ephemeralPublicKey: encrypted.ephemPublicKey.toString('base64')
-      //     }
-      //   ),
-      //   iv: encrypted.iv.toString('base64'),
-      //   tag: encrypted.mac.toString('base64')
-      // }
-      // const finalString = window.btoa(JSON.stringify(sendData))
-      // console.log(finalString)
-      // onCallback?.(finalString)
+      }
+      const token = await window['CardCryptoToken'](publickey, formData)
+      onCallback?.(token)
       return true
     } catch(e) {
       console.error(e)
@@ -121,9 +95,14 @@ const CheckoutModal = React.forwardRef((props, ref) => {
   }
 
   React.useEffect(() => {
-    if(!window['cp']) {
+    if (!window['cp']) {
       const script = document.createElement('script')
       script.src = 'https://checkout.cloudpayments.ru/checkout.js'
+      window.document.body.append(script)
+    }
+    if (!window['CardCryptoToken']) {
+      const script = document.createElement('script')
+      script.src = 'https://cardcryptotoken.payselection.com/CardCryptoToken.js'
       window.document.body.append(script)
     }
   }, [])
