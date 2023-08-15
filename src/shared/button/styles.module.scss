@@ -23,4 +23,8 @@
     background-color: #d3d3d3;
     cursor: auto;
   }
+
+  @media screen and (max-width: 768px) {
+    padding: 17px 0;
+  }
 }
