@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { CheckoutModal } from 'checkout-modal'
-import type { CheckoutModalRef } from 'checkout-modal'
-import 'checkout-modal/style.css'
+import { CheckoutModal } from '@x5io/checkout-modal'
+import type { CheckoutModalRef } from '@x5io/checkout-modal'
+import '@x5io/checkout-modal/style.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
