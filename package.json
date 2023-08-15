@@ -1,6 +1,5 @@
 {
   "name": "@x5io/checkout-modal",
-  "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
