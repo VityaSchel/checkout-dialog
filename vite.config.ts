@@ -31,6 +31,8 @@ export default defineConfig((configEnv) => ({
     rollupOptions: {
       external: [
         'react', 'react-dom',
+        '@emotion/react',
+        '@emotion/styled',
         // ...Object.keys(packageJson.peerDependencies)
       ],
       output: {
