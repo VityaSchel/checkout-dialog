@@ -6,11 +6,14 @@ import Checkbox from '@x5io/flat-uikit/dist/checkbox'
 import { Button } from '@/shared/button'
 import { FormHelperText, Stack } from '@mui/material'
 import { PayFormValues } from 'checkout'
+// @ts-expect-error no types
+import InputMask from 'react-input-mask'
+import React from 'react'
 
 export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
-  initialValues?: { email? : string }
+  initialValues?: { email?: string }
   checkboxes: { defaultActive: boolean, htmlLabel: string }[]
-  onSubmit: (payFormValues: PayFormValues) => Promise<boolean>
+  onSubmit: (payFormValues: PayFormValues, sendReceipt: false | string) => Promise<boolean>
   priceInRub?: number
 }) {
   return (
@@ -25,17 +28,20 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
       }}
       validationSchema={
         Yup.object({
-          cardNumber: Yup.string().matches(/^\d+$/, 'Введите цифры').min(16, 'Введите не менее 16 цифр').max(18),
-          cardExp: Yup.string().matches(/^\d\d\/\d\d$/, 'Введите цифры').required(),
+          cardNumber: Yup.string().matches(/^\d{4} \d{4} \d{4} \d{4,6}$/, 'Введите цифры'),
+          cardExp: Yup.string().matches(/^\d\d\/\d\d$/, 'Введите цифры'),
           cardCVC: Yup.string().matches(/^\d+$/, 'Введите цифры').length(3, 'Введите 3 цифры'),
           sendReceipt: Yup.boolean(),
           email: Yup.string().email(),
           ...Object.fromEntries(checkboxes.map((cb, i) => [`checkbox${i}`, Yup.bool().oneOf([true], ' ').required()]))
         })
       }
+      validateOnBlur={false}
+      validateOnChange={false}
+      validateOnMount={false}
       onSubmit={(values, { setSubmitting, setErrors }) => {
         setSubmitting(true)
-        onSubmit(values)
+        onSubmit(values, values.sendReceipt && values.email)
           .then((isCorrect: boolean) => {
             if(!isCorrect) {
               setErrors({ cardNumber: 'Некорректные данные' })
@@ -49,35 +55,52 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
         errors,
         touched,
         handleChange,
+        // setFieldValue,
         handleBlur,
         handleSubmit,
         isSubmitting,
         /* and other goodies */
       }) => (
         <form onSubmit={handleSubmit} className={styles.form}>
-          <Input
-            placeholder='4123 4567 1234 5678'
-            label='Номер карты'
-            type="cardNumber"
-            name="cardNumber"
-            inputProps={{ maxlength: 18 }}
-            onChange={handleChange}
-            onBlur={handleBlur}
+          <InputMask
+            mask="9999 9999 9999 999999"
             value={values.cardNumber}
-            error={values.cardNumber && errors.cardNumber}
-          />
+            name="cardNumber"
+            onChange={handleChange}
+            maskChar={null}
+          >
+            {(inputProps: any) => (
+              <Input
+                placeholder='4123 4567 1234 5678'
+                label='Номер карты'
+                type="cardNumber"
+                name="cardNumber"
+                onChange={handleChange}
+                error={values.cardNumber && errors.cardNumber}
+                {...inputProps}
+              />
+            )}
+          </InputMask>
           <Stack direction='row' spacing={2} className={styles.flex}>
-            <Input
-              placeholder='12/34'
-              label='Месяц/Год'
-              type="cardExp"
-              name="cardExp"
-              inputProps={{ maxlength: 5 }}
-              onChange={handleChange}
-              onBlur={handleBlur}
+            <InputMask 
+              mask="99/99" 
               value={values.cardExp}
-              error={values.cardExp && errors.cardExp}
-            />
+              name="cardExp"
+              onChange={handleChange}
+              maskChar={null}
+            >
+              {(inputProps: any) => (
+                <Input
+                  placeholder='12/34'
+                  label='Месяц/Год'
+                  type="cardExp"
+                  name="cardExp"
+                  onChange={handleChange}
+                  error={values.cardExp && errors.cardExp}
+                  {...inputProps}
+                />
+              )}
+            </InputMask>
             <Input
               placeholder='123'
               label='CVC'
@@ -125,7 +148,12 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
               </Checkbox>
             </>
           ))}
-          <Button type="submit" disabled={Object.keys(errors).length > 0 || isSubmitting} className={styles.submit}>
+          <Button type="submit" disabled={
+            !values.cardCVC?.length || 
+            !values.cardExp?.length || 
+            !values.cardNumber?.length || 
+            isSubmitting
+          } className={styles.submit}>
             Оплатить {priceInRub} ₽
           </Button>
         </form>

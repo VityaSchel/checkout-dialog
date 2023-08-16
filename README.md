@@ -14,8 +14,13 @@ import 'checkout-modal/index.css'
 function Main() {
   const checkoutRef = React.useRef<CheckoutModalRef>()
 
+  const email = 'hi@hloth.dev'
+
   React.useEffect(() => {
     checkoutRef.current?.open({
+      initialValues: {
+        email
+      }
       paymentInfo: {
         title: 'Оплата подписки "название магазина"',
         priceString: '999 ₽',
@@ -27,7 +32,13 @@ function Main() {
         { defaultActive: true, htmlLabel: 'Foo bar' },
         { defaultActive: true, htmlLabel: 'Hello world' },
       ]
-    }, alert)
+    }, (cryptogram: string, sendReceiptToEmail: string | false) => {
+      alert(cryptogram)
+      if(sendReceiptToEmail) {
+        alert(`Чек выслан на ${sendReceiptToEmail}`)
+      }
+      return true
+    })
   }, [])
 
   return (
@@ -37,5 +48,7 @@ function Main() {
   )
 }
 ```
+
+В колбэке onSuccess в котором передается cryptogram нужно возвращать boolean, означающий удался ли запрос или нет (показать ошибку или успех).
 
 Обязательна настройка сервер-сайд рендеринга [https://mui.com/material-ui/guides/server-rendering/](https://mui.com/material-ui/guides/server-rendering/)
