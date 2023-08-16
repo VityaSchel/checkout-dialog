@@ -3,6 +3,8 @@ import styles from './styles.module.scss'
 import { Button } from '@/shared/button'
 import Dialog from '@mui/material/Dialog'
 import { PayForm } from '@/features/pay-form'
+import { AppBar, IconButton, Toolbar, Typography, useMediaQuery } from '@mui/material'
+import { MdClose } from 'react-icons/md'
 
 export type PayFormValues = {
   cardNumber: string
@@ -107,16 +109,45 @@ const CheckoutModal = React.forwardRef((props, ref) => {
     }
   }, [])
 
+  const isMobile = useMediaQuery('(max-width: 768px)')
+
   return (
-    <Dialog onClose={handleClose} open={open} className={styles.dialog}>
-      <h1 className={styles.title}>{paymentInfo?.title}</h1>
-      <span className={styles.price}>{paymentInfo?.priceString}</span>
-      <PayForm
-        initialValues={initialValues}
-        checkboxes={checkboxes!}
-        onSubmit={handleGenerateCryptogram}
-        priceInRub={paymentInfo?.priceInRub}
-      />
+    <Dialog 
+      onClose={handleClose} 
+      open={open} 
+      className={styles.dialog} 
+      fullScreen={isMobile}
+    >
+      {isMobile
+        ? (
+          <AppBar sx={{ position: 'relative', marginBottom: 4 }}>
+            <Toolbar>
+              <IconButton
+                edge="start"
+                color="inherit"
+                onClick={handleClose}
+                aria-label="close"
+              >
+                <MdClose />
+              </IconButton>
+              <Typography sx={{ ml: 2, flex: 1, fontSize: 16 }} variant="h6" component="div">
+                {paymentInfo?.title}
+              </Typography>
+            </Toolbar>
+          </AppBar>
+        ) : (
+          <h1 className={styles.title}>{paymentInfo?.title}</h1>
+        )
+      }
+      <div className={styles.dialogContent}>
+        <span className={styles.price}>{paymentInfo?.priceString}</span>
+        <PayForm
+          initialValues={initialValues}
+          checkboxes={checkboxes!}
+          onSubmit={handleGenerateCryptogram}
+          priceInRub={paymentInfo?.priceInRub}
+        />
+      </div>
     </Dialog>
   )
 })

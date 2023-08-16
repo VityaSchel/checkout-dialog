@@ -1,6 +1,9 @@
-.dialog [class~=MuiPaper-root] {
-  padding: 32px;
+.dialog [class~=MuiPaper-root]:not([class~=MuiAppBar-root]) {
   border-radius: 32px;
+
+  @media screen and (max-width: $breakpoint-tablet) {
+    border-radius: 0;
+  }
 
   .title {
     color: #303030;
@@ -20,5 +23,18 @@
     font-weight: 700;
     line-height: normal; 
     margin-bottom: 20px;
+  }
+
+  .title, 
+  .dialogContent {
+    padding: 32px;
+  }
+
+  .title {
+    padding-bottom: 0;
+  }
+
+  .dialogContent {
+    padding-top: 0;
   }
 }

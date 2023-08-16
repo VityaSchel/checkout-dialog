@@ -5,6 +5,11 @@
   width: 434px;
   max-width: 100%;
 
+  @media screen and (max-width: $breakpoint-tablet) {
+    width: 100%;
+    max-width: unset;
+  }
+
   .flex > * {
     flex: 1;
   }
