@@ -41,7 +41,11 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
       validateOnMount={false}
       onSubmit={(values, { setSubmitting, setErrors }) => {
         setSubmitting(true)
-        onSubmit(values, values.sendReceipt && values.email)
+        onSubmit({
+          cardNumber: values.cardNumber.replaceAll(/[^\d]/g, ''),
+          cardExp: values.cardExp,
+          cardCVC: values.cardCVC,
+        }, values.sendReceipt && values.email)
           .then((isCorrect: boolean) => {
             if(!isCorrect) {
               setErrors({ cardNumber: 'Некорректные данные' })
