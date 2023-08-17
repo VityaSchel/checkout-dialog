@@ -87,6 +87,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
           Amount: paymentInfo?.priceInRub,
           Currency: 'RUB'
         },
+        PaymentMethod: 'Card',
         PaymentDetails: {
           CardholderName: 'TEST CARD',
           CardNumber: cardNumber,
