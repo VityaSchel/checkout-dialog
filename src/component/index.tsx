@@ -15,7 +15,7 @@ export type PayFormValues = {
 const CheckoutModal = React.forwardRef((props, ref) => {
   const [open, setOpen] = React.useState(false)
   const [onCancel, setOnCancel] = React.useState<undefined | (() => any)>(undefined)
-  const [onCallback, setOnCallback] = React.useState<undefined | ((cryptogram: string) => any)>(undefined)
+  const [onCallback, setOnCallback] = React.useState<undefined | ((cryptogram: string) => Promise<boolean | undefined>)>(undefined)
   const [initialValues, setInitialValues] = React.useState<undefined | { email?: string }>(undefined)
   const [paymentInfo, setPaymentInfo] = React.useState<undefined | {
     title: string
@@ -24,6 +24,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
   }>()
   const [checkboxes, setCheckboxes] = React.useState<undefined | { defaultActive: boolean, htmlLabel: string }[]>(undefined)
   const [paymentProcessor, setPaymentProcessor] = React.useState < { name: 'cloudpayments', publicId: string } | { name: 'payselection', publickey: string }>()
+  const [screen, setScreen] = React.useState<'pay' | 'error'>('pay')
 
   const handleClose = () => {
     setOpen(false)
@@ -32,6 +33,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
 
   React.useImperativeHandle((ref), () => ({
     open(options, onSuccess, onCancel) {
+      setScreen('pay')
       setOnCancel(() => onCancel)
       setOnCallback(() => onSuccess)
       setInitialValues(options.initialValues)
@@ -65,6 +67,12 @@ const CheckoutModal = React.forwardRef((props, ref) => {
       })
       const cryptogram = await cp.createPaymentCryptogram(fieldValues)
       onCallback?.(cryptogram)
+        .then(result => {
+          if(result === false) {
+            setScreen('error')
+          }
+        })
+        .catch(() => setScreen('error'))
       return true
     } catch(e) {
       console.error(e)
@@ -89,6 +97,12 @@ const CheckoutModal = React.forwardRef((props, ref) => {
       }
       const token = await window['CardCryptoToken'](publickey, formData)
       onCallback?.(token)
+        .then(result => {
+          if (result === false) {
+            setScreen('error')
+          }
+        })
+        .catch(() => setScreen('error'))
       return true
     } catch(e) {
       console.error(e)
@@ -140,13 +154,21 @@ const CheckoutModal = React.forwardRef((props, ref) => {
         )
       }
       <div className={styles.dialogContent}>
-        <span className={styles.price}>{paymentInfo?.priceString}</span>
-        <PayForm
-          initialValues={initialValues}
-          checkboxes={checkboxes!}
-          onSubmit={handleGenerateCryptogram}
-          priceInRub={paymentInfo?.priceInRub}
-        />
+        {screen === 'pay'
+          ? (<>
+            <span className={styles.price}>{paymentInfo?.priceString}</span>
+            <PayForm
+              initialValues={initialValues}
+              checkboxes={checkboxes!}
+              onSubmit={handleGenerateCryptogram}
+              priceInRub={paymentInfo?.priceInRub}
+            />
+          </>) : (
+            <div className={styles.error}>
+              <span className={styles.errorTitle}>Ошибка при оплате</span>
+              <Button onClick={handleClose}>Вернуться в магазин</Button>
+            </div>
+          )}
       </div>
     </Dialog>
   )
