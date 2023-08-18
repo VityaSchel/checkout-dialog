@@ -1,10 +1,12 @@
 import React from 'react'
 import styles from './styles.module.scss'
+import Spinner from 'react-bootstrap/Spinner'
 import { Button } from '@/shared/button'
 import Dialog from '@mui/material/Dialog'
 import { PayForm } from '@/features/pay-form'
 import { AppBar, IconButton, Toolbar, Typography, useMediaQuery } from '@mui/material'
 import { MdClose } from 'react-icons/md'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 export type PayFormValues = {
   cardNumber: string
@@ -24,7 +26,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
   }>()
   const [checkboxes, setCheckboxes] = React.useState<undefined | { defaultActive: boolean, htmlLabel: string }[]>(undefined)
   const [paymentProcessor, setPaymentProcessor] = React.useState < { name: 'cloudpayments', publicId: string } | { name: 'payselection', publickey: string }>()
-  const [screen, setScreen] = React.useState<'pay' | 'error'>('pay')
+  const [screen, setScreen] = React.useState<'pay' | 'loading' | 'error' | 'success'>('pay')
 
   const handleClose = () => {
     setOpen(false)
@@ -45,6 +47,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
   } as CheckoutModalRef))
 
   const handleGenerateCryptogram = async (payFormValues: PayFormValues) => {
+    setScreen('loading')
     if (paymentProcessor?.name === 'cloudpayments') {
       return await generateCloudPaymentsCryptogram(payFormValues, paymentProcessor.publicId)
     } else if(paymentProcessor?.name === 'payselection') {
@@ -70,6 +73,8 @@ const CheckoutModal = React.forwardRef((props, ref) => {
         .then(result => {
           if(result === false) {
             setScreen('error')
+          } else if(result === true) {
+            setScreen('success')
           }
         })
         .catch(() => setScreen('error'))
@@ -101,6 +106,8 @@ const CheckoutModal = React.forwardRef((props, ref) => {
         .then(result => {
           if (result === false) {
             setScreen('error')
+          } else if (result === true) {
+            setScreen('success')
           }
         })
         .catch(() => setScreen('error'))
@@ -164,12 +171,23 @@ const CheckoutModal = React.forwardRef((props, ref) => {
               onSubmit={handleGenerateCryptogram}
               priceInRub={paymentInfo?.priceInRub}
             />
-          </>) : (
-            <div className={styles.error}>
-              <span className={styles.errorTitle}>Ошибка при оплате</span>
-              <Button onClick={handleClose}>Вернуться в магазин</Button>
-            </div>
-          )}
+          </>) : screen === 'error' 
+            ? (
+              <div className={styles.error}>
+                <span className={styles.errorTitle}>Ошибка</span>
+                <Button onClick={handleClose}>Вернуться в магазин</Button>
+              </div>
+            ) : screen === 'success'
+              ? (
+                <div className={styles.success}>
+                  <span className={styles.successTitle}>Спасибо!</span>
+                  <Button onClick={handleClose} disabled>Перенаправление...</Button>
+                </div>
+              ) : (
+                <div className={styles.spinner}>
+                  <Spinner animation="border" />
+                </div>
+              )}
       </div>
     </Dialog>
   )
