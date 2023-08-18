@@ -26,7 +26,11 @@ function App() {
         { defaultActive: true, htmlLabel: 'Foo bar' },
         { defaultActive: true, htmlLabel: 'Hello world' },
       ]
-    }, alert)
+    }, async (cryptogram: string) => {
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      alert(cryptogram)
+      return true
+    })
   }, [])
 
   return (
