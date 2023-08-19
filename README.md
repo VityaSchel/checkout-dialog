@@ -32,11 +32,8 @@ function Main() {
         { defaultActive: true, htmlLabel: 'Foo bar' },
         { defaultActive: true, htmlLabel: 'Hello world' },
       ]
-    }, (cryptogram: string, sendReceiptToEmail: string | false) => {
+    }, (cryptogram: string) => {
       alert(cryptogram)
-      if(sendReceiptToEmail) {
-        alert(`Чек выслан на ${sendReceiptToEmail}`)
-      }
       return true
     })
   }, [])

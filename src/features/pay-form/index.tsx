@@ -13,7 +13,7 @@ import React from 'react'
 export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
   initialValues?: { email?: string }
   checkboxes: { defaultActive: boolean, htmlLabel: string }[]
-  onSubmit: (payFormValues: PayFormValues, sendReceipt: false | string) => Promise<boolean>
+  onSubmit: (payFormValues: PayFormValues/*, sendReceipt: false | string*/) => Promise<boolean>
   priceInRub?: number
 }) {
   return (
@@ -45,7 +45,7 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
           cardNumber: values.cardNumber.replaceAll(/[^\d]/g, ''),
           cardExp: values.cardExp,
           cardCVC: values.cardCVC,
-        }, values.sendReceipt && values.email)
+        } /*, values.sendReceipt && values.email */)
           .then((isCorrect: boolean) => {
             if(!isCorrect) {
               setErrors({ cardNumber: 'Некорректные данные' })
@@ -117,7 +117,7 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
               error={values.cardCVC && errors.cardCVC}
             />
           </Stack>
-          <Checkbox
+          {/* <Checkbox
             name='sendReceipt'
             onChange={handleChange}
             error={undefined}
@@ -136,7 +136,7 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
               value={values.email}
               error={values.email && errors.email}
             />
-          )}
+          )} */}
           {checkboxes.map((cb, i) => (
             <>
               <Checkbox

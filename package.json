@@ -1,6 +1,6 @@
 {
   "name": "@x5io/checkout-modal",
-  "version": "1.1.6",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
