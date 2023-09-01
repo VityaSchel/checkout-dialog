@@ -38,8 +38,9 @@ function Main() {
         { defaultActive: true, htmlLabel: 'Foo bar' },
         { defaultActive: true, htmlLabel: 'Hello world' },
       ]
-    }, (cryptogram: string) => {
+    }, (cryptogram: string, email: string) => {
       alert(cryptogram)
+      console.log('set-email', email)
       return true
     })
   }, [])

@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import Input from '@x5io/flat-uikit/dist/input'
 import Checkbox from '@x5io/flat-uikit/dist/checkbox'
 import { Button } from '@/shared/button'
-import { FormHelperText, Stack } from '@mui/material'
+import { Stack } from '@mui/material'
 import { PayFormValues } from 'checkout'
 // @ts-expect-error no types
 import InputMask from 'react-input-mask'
@@ -45,6 +45,7 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
           cardNumber: values.cardNumber.replaceAll(/[^\d]/g, ''),
           cardExp: values.cardExp,
           cardCVC: values.cardCVC,
+          email: values.email
         } /*, values.sendReceipt && values.email */)
           .then((isCorrect: boolean) => {
             if(!isCorrect) {
@@ -124,19 +125,20 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
             value={values.sendReceipt}
           >
             Отправить квитанцию на E-mail
-          </Checkbox>
-          {values.sendReceipt && (
-            <Input
-              placeholder='Почта для чека'
-              label='E-mail'
-              type="email"
-              name="email"
-              onChange={handleChange}
-              onBlur={handleBlur}
-              value={values.email}
-              error={values.email && errors.email}
-            />
-          )} */}
+          </Checkbox> */}
+          {/* {values.sendReceipt && ( */}
+          <Input
+            placeholder='Почта'
+            label='E-mail'
+            type="email"
+            name="email"
+            onChange={handleChange}
+            onBlur={handleBlur}
+            value={values.email}
+            error={values.email && errors.email}
+            disabled={Boolean(initialValues?.email)}
+          />
+          {/* )} */}
           {checkboxes.map((cb, i) => (
             <>
               <Checkbox

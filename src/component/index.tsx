@@ -12,12 +12,13 @@ export type PayFormValues = {
   cardNumber: string
   cardExp: string
   cardCVC: string
+  email: string
 }
 
 const CheckoutModal = React.forwardRef((props, ref) => {
   const [open, setOpen] = React.useState(false)
   const [onCancel, setOnCancel] = React.useState<undefined | (() => any)>(undefined)
-  const [onCallback, setOnCallback] = React.useState<undefined | ((cryptogram: string) => Promise<boolean | undefined>)>(undefined)
+  const [onCallback, setOnCallback] = React.useState<undefined | ((cryptogram: string, email: string) => Promise<boolean | undefined>)>(undefined)
   const [initialValues, setInitialValues] = React.useState<undefined | { email?: string }>(undefined)
   const [paymentInfo, setPaymentInfo] = React.useState<undefined | {
     title: string
@@ -68,7 +69,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
     }
   }
 
-  const generateCloudPaymentsCryptogram = async ({ cardNumber, cardExp, cardCVC }: PayFormValues, publicId: string): Promise<boolean> => {
+  const generateCloudPaymentsCryptogram = async ({ cardNumber, cardExp, cardCVC, email }: PayFormValues, publicId: string): Promise<boolean> => {
     const fieldValues = {
       cvv: cardCVC,
       cardNumber: cardNumber,
@@ -80,7 +81,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
         publicId: publicId,
       })
       const cryptogram = await cp.createPaymentCryptogram(fieldValues)
-      onCallback?.(cryptogram)
+      onCallback?.(cryptogram, email)
         .then(result => {
           if(result === false) {
             setScreen('error')
@@ -96,7 +97,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
     }
   }
 
-  const generatePaySelectionCryptogram = async ({ cardNumber, cardExp, cardCVC }: PayFormValues, publickey: string): Promise<boolean> => {
+  const generatePaySelectionCryptogram = async ({ cardNumber, cardExp, cardCVC, email }: PayFormValues, publickey: string): Promise<boolean> => {
     try {
       const formData = {
         TransactionDetails: {
@@ -113,7 +114,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
         },
       }
       const token = await window['CardCryptoToken'](publickey, formData)
-      onCallback?.(token)
+      onCallback?.(token, email)
         .then(result => {
           if (result === false) {
             setScreen('error')
@@ -236,7 +237,7 @@ export type CheckoutModalRef = {
         htmlLabel: string
       }[]
     },
-    onSuccess: (cryptogram: string) => any,
+    onSuccess: (cryptogram: string, email: string) => any,
     onCancel?: () => any
   ) => any
 }
