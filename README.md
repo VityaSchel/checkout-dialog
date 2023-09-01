@@ -26,6 +26,12 @@ function Main() {
         priceString: '999 ₽',
         priceInRub: 999
       },
+      /* paymentProcessor: { 
+        name: 'auto', 
+        resolver: (cardNumber: string) => {
+          return { name: 'cloudpayments', publicId: 'test_api_000000000000000002' }
+        }
+      }*/,
       // paymentProcessor: { name: 'cloudpayments', publicId: 'test_api_000000000000000002' },
       paymentProcessor: { name: 'payselection', publickey: '0405397f7577bd835210a57708aafe876786dc8e2d12e6880917d61a4ad1d03a75068ea6bc26554c7a1bf5b50ed40105837eee001178579279eca57f89bdff5fc2' },
       checkboxes: [

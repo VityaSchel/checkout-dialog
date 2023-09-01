@@ -25,7 +25,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
     priceInRub: number
   }>()
   const [checkboxes, setCheckboxes] = React.useState<undefined | { defaultActive: boolean, htmlLabel: string }[]>(undefined)
-  const [paymentProcessor, setPaymentProcessor] = React.useState < { name: 'cloudpayments', publicId: string } | { name: 'payselection', publickey: string }>()
+  const [paymentProcessor, setPaymentProcessor] = React.useState<PaymentProcessorOption>()
   const [screen, setScreen] = React.useState<'pay' | 'loading' | 'error' | 'success'>('pay')
 
   const handleClose = () => {
@@ -48,10 +48,21 @@ const CheckoutModal = React.forwardRef((props, ref) => {
 
   const handleGenerateCryptogram = async (payFormValues: PayFormValues) => {
     setScreen('loading')
-    if (paymentProcessor?.name === 'cloudpayments') {
-      return await generateCloudPaymentsCryptogram(payFormValues, paymentProcessor.publicId)
-    } else if(paymentProcessor?.name === 'payselection') {
-      return await generatePaySelectionCryptogram(payFormValues, paymentProcessor.publickey)
+    let processor = paymentProcessor
+    if (paymentProcessor?.name === 'auto') {
+      processor = paymentProcessor.resolver(payFormValues.cardNumber.replaceAll(/[^\d]/g, ''))
+      if (!processor) {
+        setScreen('error')
+        return false
+      }
+    } else if (!processor) {
+      return false
+    }
+    
+    if (processor.name === 'cloudpayments') {
+      return await generateCloudPaymentsCryptogram(payFormValues, processor.publicId)
+    } else if(processor.name === 'payselection') {
+      return await generatePaySelectionCryptogram(payFormValues, processor.publickey)
     } else {
       return false
     }
@@ -195,6 +206,19 @@ const CheckoutModal = React.forwardRef((props, ref) => {
 CheckoutModal.displayName = 'CheckoutModal'
 export { CheckoutModal }
 
+type PaymentProcessorOption = {
+  name: 'auto'
+  resolver: (cardNumber: string) => PaymentProcessor
+} | PaymentProcessor
+
+type PaymentProcessor = {
+  name: 'cloudpayments'
+  publicId: string
+} | {
+  name: 'payselection',
+  publickey: string
+}
+
 export type CheckoutModalRef = {
   open: (
     options: {
@@ -203,13 +227,7 @@ export type CheckoutModalRef = {
         priceString: string
         priceInRub: number
       },
-      paymentProcessor: {
-        name: 'cloudpayments' 
-        publicId: string
-      } | {
-        name: 'payselection',
-        publickey: string
-      },
+      paymentProcessor: PaymentProcessorOption,
       initialValues?: {
         email?: string
       },
