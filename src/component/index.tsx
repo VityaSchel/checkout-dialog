@@ -50,7 +50,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
     setScreen('loading')
     let processor = paymentProcessor
     if (paymentProcessor?.name === 'auto') {
-      processor = paymentProcessor.resolver(payFormValues.cardNumber.replaceAll(/[^\d]/g, ''))
+      processor = await paymentProcessor.resolver(payFormValues.cardNumber.replaceAll(/[^\d]/g, ''))
       if (!processor) {
         setScreen('error')
         return false
@@ -58,12 +58,12 @@ const CheckoutModal = React.forwardRef((props, ref) => {
     } else if (!processor) {
       return false
     }
-    
     if (processor.name === 'cloudpayments') {
       return await generateCloudPaymentsCryptogram(payFormValues, processor.publicId)
     } else if(processor.name === 'payselection') {
       return await generatePaySelectionCryptogram(payFormValues, processor.publickey)
     } else {
+      setScreen('error')
       return false
     }
   }
