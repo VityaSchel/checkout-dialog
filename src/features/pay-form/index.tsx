@@ -159,6 +159,7 @@ export function PayForm({ initialValues, emailRequired, checkboxes, onSubmit, pr
             !values.cardCVC?.length || 
             !values.cardExp?.length || 
             !values.cardNumber?.length || 
+            (emailRequired && !values.email?.length) ||
             isSubmitting
           } className={styles.submit}>
             Оплатить {priceInRub} ₽
