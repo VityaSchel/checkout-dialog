@@ -130,13 +130,13 @@ export function PayForm({ initialValues, emailRequired, checkboxes, onSubmit, pr
           {/* {values.sendReceipt && ( */}
           <Input
             placeholder='Почта'
-            label='E-mail'
+            label={'E-mail' + (emailRequired ? ' *' : '')}
             type="email"
             name="email"
             onChange={handleChange}
             onBlur={handleBlur}
             value={values.email}
-            error={values.email && errors.email}
+            error={errors.email}
             disabled={Boolean(initialValues?.email)}
           />
           {/* )} */}
