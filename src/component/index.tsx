@@ -25,6 +25,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
     priceString: string
     priceInRub: number
   }>()
+  const [paymentOptions, setPaymentOptions] = React.useState<{ emailRequired: boolean } | null>(null)
   const [checkboxes, setCheckboxes] = React.useState<undefined | { defaultActive: boolean, htmlLabel: string }[]>(undefined)
   const [paymentProcessor, setPaymentProcessor] = React.useState<PaymentProcessorOption>()
   const [screen, setScreen] = React.useState<'pay' | 'loading' | 'error' | 'success'>('pay')
@@ -36,6 +37,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
 
   React.useImperativeHandle((ref), () => ({
     open(options, onSuccess, onCancel) {
+      setPaymentOptions({ emailRequired: options.emailRequired ?? false })
       setScreen('pay')
       setOnCancel(() => onCancel)
       setOnCallback(() => onSuccess)
@@ -179,6 +181,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
             <span className={styles.price}>{paymentInfo?.priceString}</span>
             <PayForm
               initialValues={initialValues}
+              emailRequired={paymentOptions?.emailRequired ?? false}
               checkboxes={checkboxes!}
               onSubmit={handleGenerateCryptogram}
               priceInRub={paymentInfo?.priceInRub}
@@ -235,7 +238,8 @@ export type CheckoutModalRef = {
       checkboxes: {
         defaultActive: boolean
         htmlLabel: string
-      }[]
+      }[],
+      emailRequired?: boolean
     },
     onSuccess: (cryptogram: string, email: string) => any,
     onCancel?: () => any

@@ -10,8 +10,9 @@ import { PayFormValues } from 'checkout'
 import InputMask from 'react-input-mask'
 import React from 'react'
 
-export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
+export function PayForm({ initialValues, emailRequired, checkboxes, onSubmit, priceInRub }: {
   initialValues?: { email?: string }
+  emailRequired: boolean,
   checkboxes: { defaultActive: boolean, htmlLabel: string }[]
   onSubmit: (payFormValues: PayFormValues/*, sendReceipt: false | string*/) => Promise<boolean>
   priceInRub?: number
@@ -32,7 +33,7 @@ export function PayForm({ initialValues, checkboxes, onSubmit, priceInRub }: {
           cardExp: Yup.string().matches(/^\d\d\/\d\d$/, 'Введите цифры'),
           cardCVC: Yup.string().matches(/^\d+$/, 'Введите цифры').length(3, 'Введите 3 цифры'),
           sendReceipt: Yup.boolean(),
-          email: Yup.string().email(),
+          ...(emailRequired ? { email: Yup.string().email('Введите почту').required('Обязательное поле') } : { email: Yup.string().email('Введите почту') }),
           ...Object.fromEntries(checkboxes.map((cb, i) => [`checkbox${i}`, Yup.bool().oneOf([true], ' ').required()]))
         })
       }

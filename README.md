@@ -20,7 +20,7 @@ function Main() {
     checkoutRef.current?.open({
       initialValues: {
         email
-      }
+      },
       paymentInfo: {
         title: 'Оплата подписки "название магазина"',
         priceString: '999 ₽',
@@ -37,7 +37,8 @@ function Main() {
       checkboxes: [
         { defaultActive: true, htmlLabel: 'Foo bar' },
         { defaultActive: true, htmlLabel: 'Hello world' },
-      ]
+      ],
+      emailRequired: true
     }, (cryptogram: string, email: string) => {
       alert(cryptogram)
       console.log('set-email', email)
