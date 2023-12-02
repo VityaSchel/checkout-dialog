@@ -1,5 +1,9 @@
 # Checkout modal
 
+![Screenshot](https://raw.githubusercontent.com/VityaSchel/checkout-dialog/demo/image.png)
+
+[Visit interactive demo](https://vityaschel.github.io/checkout-dialog)
+
 Компонент для оплаты на сайте в модальном окне с поддержкой cloudpayments и payselection.
 
 Types definitions запакованы, стили скомпилированы в `style.css`.
