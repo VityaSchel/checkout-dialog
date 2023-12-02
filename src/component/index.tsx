@@ -129,6 +129,7 @@ const CheckoutModal = React.forwardRef((props, ref) => {
       return true
     } catch(e) {
       console.error(e)
+      setScreen('error')
       return false
     }
   }
